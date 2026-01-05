@@ -1,10 +1,19 @@
 import { createAuthClient } from "better-auth/react";
 import { DEFAULT_LOGIN_REDIRECT } from "@/lib/config";
-import { adminClient, magicLinkClient } from "better-auth/client/plugins";
+import { adminClient, magicLinkClient, twoFactorClient } from "better-auth/client/plugins";
 import { passkeyClient } from "@better-auth/passkey/client";
 
 export const authClient = createAuthClient({
-  plugins: [adminClient(), passkeyClient(), magicLinkClient()],
+  plugins: [
+    adminClient(),
+    passkeyClient(),
+    magicLinkClient(),
+    twoFactorClient({
+      onTwoFactorRedirect() {
+        window.location.href = "/auth/2fa";
+      },
+    }),
+  ],
 });
 
 export const signInWithGithub = async () => {

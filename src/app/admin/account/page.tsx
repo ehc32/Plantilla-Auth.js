@@ -62,6 +62,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
+import TwoFactorSettings from "@/components/auth/two-factor-settings";
 
 const getDeviceIcon = (userAgent: string | null) => {
     if (!userAgent) return <Globe className="h-4 w-4" />;
@@ -473,6 +474,18 @@ export default function AdminAccountPage() {
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Two-Factor Authentication Section */}
+                    <div className="mt-4">
+                        <div className="bg-card p-5 rounded-lg border shadow-sm">
+                            <TwoFactorSettings
+                                currentUser={{
+                                    twoFactorEnabled: session.user.twoFactorEnabled || false,
+                                    email: session.user.email
+                                }}
+                            />
                         </div>
                     </div>
                 </CardContent>

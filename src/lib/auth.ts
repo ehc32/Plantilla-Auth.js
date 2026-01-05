@@ -2,12 +2,13 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { betterAuth } from "better-auth";
-import { admin, magicLink } from "better-auth/plugins";
+import { admin, magicLink, twoFactor } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
+  appName: "Better Auth Starter",
   trustedOrigins: ["https://plantilla-auth-js.vercel.app"],
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -74,6 +75,18 @@ export const auth = betterAuth({
           subject: "Sign in with Magic Link",
           text: `Click the link to sign in: ${url}`,
         });
+      },
+    }),
+    twoFactor({
+      issuer: "Better Auth Starter",
+      otpOptions: {
+        async sendOTP({ user, otp }) {
+          await sendEmail({
+            to: user.email,
+            subject: "Your 2FA Code",
+            text: `Your verification code is: ${otp}. This code will expire in 3 minutes.`,
+          });
+        },
       },
     }),
   ],
