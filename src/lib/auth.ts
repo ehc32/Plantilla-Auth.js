@@ -9,7 +9,10 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
   appName: "Better Auth Starter",
-  trustedOrigins: ["https://plantilla-auth-js.vercel.app"],
+  baseURL: "https://plantilla-auth-js.vercel.app",
+  trustedOrigins: [
+    "https://plantilla-auth-js.vercel.app",
+  ],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -17,6 +20,12 @@ export const auth = betterAuth({
       user: schema.user,
     },
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes for 2FA temporary session
+    },
+  },
   account: {
     accountLinking: {
       enabled: true,
