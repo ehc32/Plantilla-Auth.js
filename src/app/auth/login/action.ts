@@ -10,9 +10,18 @@ export async function loginUser({
 }: {
   email: string;
   password: string;
-}): Promise<ActionResult<{ user: { id: string; email: string } }>> {
+}): Promise<ActionResult<{ user: { id: string; email: string }; twoFactorRedirect?: boolean }>> {
   try {
-    await auth.api.signInEmail({ body: { email, password } });
+    const response = await auth.api.signInEmail({ body: { email, password } });
+
+    // Check if 2FA is required
+    if ("twoFactorRedirect" in response && response.twoFactorRedirect) {
+      return {
+        success: { reason: "2FA verification required" },
+        error: null,
+        data: { twoFactorRedirect: true, user: { id: "", email } },
+      };
+    }
 
     return {
       success: { reason: "Login successful" },

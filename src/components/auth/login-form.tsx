@@ -46,9 +46,15 @@ const LoginForm = () => {
   const onSubmit = async (data: FormData) => {
     setFormState({});
     const result = await loginUser(data);
+
     if (result.success) {
-      setFormState({ success: result.success.reason });
-      router.push("/dashboard");
+      // Check if 2FA verification is required
+      if (result.data?.twoFactorRedirect) {
+        router.push("/auth/2fa");
+      } else {
+        setFormState({ success: result.success.reason });
+        router.push("/dashboard");
+      }
     } else if (result.error) {
       setFormState({ error: result.error.reason });
     }
