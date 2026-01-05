@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { GoogleIcon, GithubIcon } from "@/components/ui/icons";
-import { signInWithGithub, signInWithGoogle, signInWithPasskey, signInWithTikTok, signInWithAuth0 } from "@/lib/auth-client";
+import { signInWithGithub, signInWithGoogle, signInWithPasskey, signInWithTikTok } from "@/lib/auth-client";
 import { GalleryVerticalEnd, Fingerprint } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -85,17 +85,6 @@ const LoginPage = () => {
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 1 0-1 13.6 6.84 6.84 0 0 0 6.25-5.23v-8.51a8.84 8.84 0 0 0 3.83 1.43v-3.74a4.88 4.88 0 0 1 .15-.26Z" />
                 </svg>
                 Continue with TikTok
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                type="button"
-                onClick={signInWithAuth0}
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M21.46 16.55L18.66 12.21C19.47 10.87 19.92 9.32 19.92 7.66C19.92 3.43 16.49 0 12.26 0C8.03 0 4.6 3.43 4.6 7.66C4.6 9.32 5.05 10.87 5.86 12.21L3.06 16.55C2.28 17.76 2.51 19.37 3.61 20.31C4.71 21.25 6.35 21.25 7.45 20.31L12 16.68L16.55 20.31C17.65 21.25 19.29 21.25 20.39 20.31C21.49 19.37 21.72 17.76 20.94 16.55H21.46ZM12.26 4.14C13.83 4.14 15.1 5.41 15.1 6.98C15.1 8.55 13.83 9.82 12.26 9.82C10.69 9.82 9.42 8.55 9.42 6.98C9.42 5.41 10.69 4.14 12.26 4.14Z" />
-                </svg>
-                Continue with Auth0
               </Button>
             </div>
 

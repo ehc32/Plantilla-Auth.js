@@ -47,10 +47,3 @@ export const signInWithTikTok = async () => {
     callbackURL: DEFAULT_LOGIN_REDIRECT,
   });
 };
-
-export const signInWithAuth0 = async () => {
-  await authClient.signIn.social({
-    provider: "auth0",
-    callbackURL: DEFAULT_LOGIN_REDIRECT,
-  });
-};
