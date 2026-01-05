@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
 import Link from "next/link";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");

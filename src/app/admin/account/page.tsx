@@ -61,7 +61,7 @@ import {
     HomeIcon,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const getDeviceIcon = (userAgent: string | null) => {
     if (!userAgent) return <Globe className="h-4 w-4" />;

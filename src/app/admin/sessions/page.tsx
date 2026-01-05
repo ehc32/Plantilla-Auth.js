@@ -40,7 +40,7 @@ import {
     PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { authClient } from "@/lib/auth-client";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 type SessionWithUser = {
     id: string;

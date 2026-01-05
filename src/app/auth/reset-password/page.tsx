@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { Loader2, Eye, EyeOff, Lock } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 function ResetPasswordContent() {
     const searchParams = useSearchParams();

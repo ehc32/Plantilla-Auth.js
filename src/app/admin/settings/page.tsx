@@ -22,7 +22,7 @@ import {
     Lock,
     Save
 } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(false);
