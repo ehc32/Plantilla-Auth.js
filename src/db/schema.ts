@@ -18,6 +18,7 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  twoFactorEnabled: boolean("two_factor_enabled").$defaultFn(() => false),
 });
 
 export const session = pgTable("session", {
@@ -83,3 +84,11 @@ export const passkey = pgTable("passkey", {
   aaguid: text("aaguid"),
 });
 
+export const twoFactor = pgTable("two_factor", {
+  id: text("id").primaryKey(),
+  secret: text("secret").notNull(),
+  backupCodes: text("backup_codes").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+});
