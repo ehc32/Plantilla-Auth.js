@@ -59,6 +59,11 @@ export const auth = betterAuth({
       clientSecret: process.env.TIKTOK_CLIENT_SECRET as string,
       scope: ["user.info.basic"],
     },
+    auth0: {
+      clientId: process.env.AUTH0_CLIENT_ID as string,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
+      domain: process.env.AUTH0_DOMAIN as string,
+    },
   },
   plugins: [
     nextCookies(),
