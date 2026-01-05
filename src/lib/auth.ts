@@ -8,6 +8,7 @@ import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 export const auth = betterAuth({
+  trustedOrigins: ["https://plantilla-auth-js.vercel.app"],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
