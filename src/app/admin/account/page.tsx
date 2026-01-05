@@ -142,9 +142,13 @@ export default function AdminAccountPage() {
         setSaving(true);
         try {
             await authClient.updateUser({ name: name.trim() });
-            toast.success("Profile updated successfully");
+            toast.success("Profile updated", {
+                description: "Your information has been saved successfully.",
+            });
         } catch (error) {
-            toast.error("Failed to update profile");
+            toast.error("Update failed", {
+                description: "There was a problem saving your profile. Please try again.",
+            });
             console.error(error);
         } finally {
             setSaving(false);
@@ -156,15 +160,21 @@ export default function AdminAccountPage() {
             await authClient.revokeSession({ token });
 
             if (isCurrentSession) {
-                toast.success("Session revoked. Redirecting to login...");
+                toast.success("Identity Secured", {
+                    description: "Current session revoked. Redirecting to security gateway...",
+                });
                 await authClient.signOut();
                 router.push("/auth/login");
             } else {
                 setSessions((prev) => prev.filter((s) => s.token !== token));
-                toast.success("Session revoked");
+                toast.success("Session Terminated", {
+                    description: "The remote device has been successfully signed out.",
+                });
             }
         } catch (e) {
-            toast.error("Failed to revoke session");
+            toast.error("Action Failed", {
+                description: "Could not revoke the session. Please check your connection.",
+            });
             console.error(e);
         }
     };
@@ -180,7 +190,9 @@ export default function AdminAccountPage() {
             await authClient.passkey.addPasskey({
                 name: passkeyName.trim(),
             });
-            toast.success("Passkey added successfully!");
+            toast.success("Security Key Added", {
+                description: `"${passkeyName.trim()}" is now registered for passwordless sign-in.`,
+            });
             // Refresh passkeys list
             // @ts-ignore
             const { data } = await authClient.passkey.listUserPasskeys();
@@ -188,7 +200,9 @@ export default function AdminAccountPage() {
             setIsPasskeyDialogOpen(false);
             setPasskeyName("");
         } catch (error: any) {
-            toast.error(error?.message || "Failed to add passkey");
+            toast.error("Registration Failed", {
+                description: error?.message || "Verify your security key device and try again.",
+            });
             console.error(error);
         } finally {
             setCreatingPasskey(false);
@@ -200,9 +214,13 @@ export default function AdminAccountPage() {
             // @ts-ignore - passkey plugin
             await authClient.passkey.deletePasskey({ id });
             setPasskeys((prev) => prev.filter((p) => p.id !== id));
-            toast.success("Passkey removed");
+            toast.success("Security Key Removed", {
+                description: "This key can no longer be used to access your account.",
+            });
         } catch (error) {
-            toast.error("Failed to remove passkey");
+            toast.error("Removal Error", {
+                description: "The security key could not be removed at this time.",
+            });
             console.error(error);
         }
     };
