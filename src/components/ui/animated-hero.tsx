@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import Image from "next/image";
 
 function Hero() {
@@ -62,13 +63,13 @@ function Hero() {
                     animate={
                       titleNumber === index
                         ? {
-                            y: 0,
-                            opacity: 1,
-                          }
+                          y: 0,
+                          opacity: 1,
+                        }
                         : {
-                            y: titleNumber > index ? -150 : 150,
-                            opacity: 0,
-                          }
+                          y: titleNumber > index ? -150 : 150,
+                          opacity: 0,
+                        }
                     }
                   >
                     {title}
@@ -86,7 +87,7 @@ function Hero() {
           </div>
           <div className="flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="outline" asChild>
-              <a href="/dashboard">View Demo</a>
+              <Link href="/dashboard">View Demo</Link>
             </Button>
             <Button size="lg" className="gap-4" asChild>
               <a

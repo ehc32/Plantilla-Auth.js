@@ -2,7 +2,8 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { sendEmail } from "@/lib/email";
 import { betterAuth } from "better-auth";
-import { admin } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
+import { passkey } from "@better-auth/passkey";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
@@ -22,7 +23,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
+    resetPasswordTokenExpiresIn: 60 * 60,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        text: `Click the link to reset your password: ${url}`,
+      });
+    },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
@@ -45,12 +53,26 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
+    tiktok: {
+      clientKey: process.env.TIKTOK_CLIENT_KEY as string,
+      clientSecret: process.env.TIKTOK_CLIENT_SECRET as string,
+    },
   },
   plugins: [
     nextCookies(),
     admin({
       defaultRole: "user",
       adminRoles: ["admin"],
+    }),
+    passkey(),
+    magicLink({
+      sendMagicLink: async ({ email, token, url }) => {
+        await sendEmail({
+          to: email,
+          subject: "Sign in with Magic Link",
+          text: `Click the link to sign in: ${url}`,
+        });
+      },
     }),
   ],
 });

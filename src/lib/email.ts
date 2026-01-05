@@ -9,14 +9,14 @@ export const sendEmail = async (payload: {
 }) => {
   try {
     const response = await resend.emails.send({
-      from: "Zexa Technologies <no-reply@zexa.app>",
-      ...payload,
+      from: "Acme <onboarding@resend.dev>",
+      to: "xzenzi259@gmail.com", // testing: solo a tu correo
+      subject: payload.subject,
+      text: payload.text,
     });
 
     console.log("Email sent successfully:", response);
-
-    if (response?.data) return true;
-    return false;
+    return !!response?.data;
   } catch (error: any) {
     console.error("Error sending email:", error);
     return false;

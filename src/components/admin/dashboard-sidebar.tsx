@@ -3,8 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Users, Settings, LogOut, GalleryVerticalEnd } from "lucide-react";
+import { Users, Settings, LogOut, GalleryVerticalEnd, Shield, User } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { ModeToggle } from "@/components/mode-toggle";
 
 import {
   Sidebar,
@@ -16,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 
 const sidebarNavItems = [
@@ -23,6 +25,16 @@ const sidebarNavItems = [
     href: "/admin/users",
     icon: Users,
     label: "Users",
+  },
+  {
+    href: "/admin/sessions",
+    icon: Shield,
+    label: "Sessions",
+  },
+  {
+    href: "/admin/account",
+    icon: User,
+    label: "Account",
   },
 ];
 
@@ -47,7 +59,7 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <GalleryVerticalEnd className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
@@ -69,7 +81,6 @@ export function DashboardSidebar() {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.label}
-                    className="text-muted-foreground"
                   >
                     <Link href={item.href}>
                       <item.icon />
@@ -84,6 +95,11 @@ export function DashboardSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem className="flex items-center justify-between px-2">
+            <span className="text-xs text-muted-foreground mr-2">Theme</span>
+            <ModeToggle />
+          </SidebarMenuItem>
+          <SidebarSeparator className="my-2" />
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
               <Link href="/admin/settings">
@@ -96,7 +112,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton
               asChild
               tooltip="Logout"
-              className="cursor-pointer"
+              className="cursor-pointer text-destructive hover:text-destructive"
             >
               <button onClick={handleLogout}>
                 <LogOut className="h-4 w-4" />

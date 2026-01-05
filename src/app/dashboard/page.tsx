@@ -7,7 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Shield, Users, Mail, Settings, Code } from "lucide-react";
 import Link from "next/link";
 
@@ -42,16 +43,13 @@ const DashboardPage = () => {
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button
-                variant="outline"
-                className="h-auto p-4 flex-col gap-2"
-                asChild
+              <Link
+                href="/auth/register"
+                className={cn(buttonVariants({ variant: "outline" }), "h-auto p-4 flex-col gap-2")}
               >
-                <Link href="/auth/register">
-                  <Users className="h-5 w-5" />
-                  <span>Create Account</span>
-                </Link>
-              </Button>
+                <Users className="h-5 w-5" />
+                <span>Create Account</span>
+              </Link>
               <Button
                 variant="outline"
                 className="h-auto p-4 flex-col gap-2"

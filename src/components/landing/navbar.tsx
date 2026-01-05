@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { LogOut, Shield, User } from "lucide-react";
 import Image from "next/image";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const Navbar = () => {
   const { signOut, useSession } = authClient;
@@ -43,27 +44,24 @@ const Navbar = () => {
           {/* Navigation Links */}
           {session && (
             <div className="hidden md:flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
             </div>
           )}
         </div>
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
+          <ModeToggle />
           {!session ? (
             <div className="flex items-center gap-2">
-              <Link href="/auth/register">
-                <Button variant="ghost" size="sm">
-                  Sign Up
-                </Button>
-              </Link>
-              <Link href="/auth/login">
-                <Button size="sm">Sign In</Button>
-              </Link>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/auth/register">Sign Up</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/auth/login">Sign In</Link>
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-3">
