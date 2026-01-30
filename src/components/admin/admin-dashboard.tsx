@@ -106,7 +106,7 @@ export function AdminDashboard() {
           change="+12% este mes"
           icon={Users}
           link="/admin/users"
-          bgGradient="bg-gradient-to-br from-blue-500/10 to-cyan-500/5"
+          bgGradient="bg-gradient-to-br from-orange-500/10 to-amber-500/5"
         />
         <StatCard
           title="Usuarios Activos"
@@ -114,7 +114,7 @@ export function AdminDashboard() {
           change="+8% últimas 24h"
           icon={Activity}
           link="/admin/users"
-          bgGradient="bg-gradient-to-br from-emerald-500/10 to-teal-500/5"
+          bgGradient="bg-gradient-to-br from-green-500/10 to-emerald-500/5"
         />
         <StatCard
           title="Sesiones Activas"
@@ -122,7 +122,7 @@ export function AdminDashboard() {
           change="+5% hoy"
           icon={Shield}
           link="/admin/sessions"
-          bgGradient="bg-gradient-to-br from-purple-500/10 to-pink-500/5"
+          bgGradient="bg-gradient-to-br from-yellow-500/10 to-orange-500/5"
         />
         <StatCard
           title="Eventos Seguridad"
@@ -130,7 +130,7 @@ export function AdminDashboard() {
           change="-3% últimos 7 días"
           icon={TrendingUp}
           link="/admin/sessions"
-          bgGradient="bg-gradient-to-br from-orange-500/10 to-red-500/5"
+          bgGradient="bg-gradient-to-br from-red-500/10 to-rose-500/5"
         />
       </div>
 

@@ -29,8 +29,8 @@ export default function UsersPage() {
                 <p className="text-xs font-medium text-foreground/70">Total de Usuarios</p>
                 <p className="text-2xl font-bold text-foreground mt-2">245</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-500" />
+              <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                <Users className="w-5 h-5 text-orange-500" />
               </div>
             </div>
           </Card>
@@ -40,8 +40,8 @@ export default function UsersPage() {
                 <p className="text-xs font-medium text-foreground/70">Activos Hoy</p>
                 <p className="text-2xl font-bold text-foreground mt-2">156</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-emerald-500" />
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-green-600" />
               </div>
             </div>
           </Card>
@@ -51,8 +51,8 @@ export default function UsersPage() {
                 <p className="text-xs font-medium text-foreground/70">Nuevos (7 días)</p>
                 <p className="text-2xl font-bold text-foreground mt-2">28</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                <UserPlus className="w-5 h-5 text-purple-500" />
+              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <UserPlus className="w-5 h-5 text-amber-600" />
               </div>
             </div>
           </Card>

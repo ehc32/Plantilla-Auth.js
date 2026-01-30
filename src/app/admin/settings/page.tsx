@@ -52,8 +52,8 @@ export default function AdminSettingsPage() {
                     <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-blue-500/10">
-                                    <Globe className="h-5 w-5 text-blue-500" />
+                                <div className="p-2 rounded-lg bg-orange-500/10">
+                                    <Globe className="h-5 w-5 text-orange-500" />
                                 </div>
                                 <div>
                                     <CardTitle>Parámetros del Sistema</CardTitle>
@@ -96,8 +96,8 @@ export default function AdminSettingsPage() {
                     <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-purple-500/10">
-                                    <Database className="h-5 w-5 text-purple-500" />
+                                <div className="p-2 rounded-lg bg-green-500/10">
+                                    <Database className="h-5 w-5 text-green-600" />
                                 </div>
                                 <div>
                                     <CardTitle>Base de Datos y Almacenamiento</CardTitle>
@@ -125,8 +125,8 @@ export default function AdminSettingsPage() {
                     <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-red-500/10">
-                                    <Lock className="h-5 w-5 text-red-500" />
+                                <div className="p-2 rounded-lg bg-amber-500/10">
+                                    <Lock className="h-5 w-5 text-amber-600" />
                                 </div>
                                 <div>
                                     <CardTitle>Credenciales e Integraciones</CardTitle>
@@ -168,8 +168,8 @@ export default function AdminSettingsPage() {
                     <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-lg bg-orange-500/10">
-                                    <Mail className="h-5 w-5 text-orange-500" />
+                                <div className="p-2 rounded-lg bg-yellow-500/10">
+                                    <Mail className="h-5 w-5 text-yellow-600" />
                                 </div>
                                 <div>
                                     <CardTitle>Configuración SMTP</CardTitle>
