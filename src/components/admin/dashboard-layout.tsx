@@ -19,6 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { DashboardSidebar } from "@/components/admin/dashboard-sidebar";
+import { ChevronRight } from "lucide-react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -27,49 +28,81 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const relevantSegments =
     pathSegments[0] === "admin" ? pathSegments.slice(1) : pathSegments;
 
+  // Traducciones de rutas
+  const translateSegment = (segment: string): string => {
+    const translations: Record<string, string> = {
+      admin: "Dashboard",
+      users: "Usuarios",
+      sessions: "Sesiones",
+      account: "Mi Cuenta",
+      settings: "Configuración",
+    };
+    return translations[segment] || segment;
+  };
+
   return (
     <SidebarProvider>
       <DashboardSidebar />
       <SidebarInset className="bg-background overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b border-border/10 bg-background/80 backdrop-blur-sm transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4 md:px-6">
+          <div className="flex items-center gap-3 flex-1">
+            <SidebarTrigger className="-ml-1 hover:bg-sidebar-accent/50 transition-colors" />
+            <Separator orientation="vertical" className="h-5 bg-border/30" />
             <Breadcrumb>
-              <BreadcrumbList>
+              <BreadcrumbList className="flex-wrap gap-1">
                 <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
+                  <BreadcrumbLink asChild className="hover:text-foreground transition-colors">
+                    <Link href="/admin" className="flex items-center gap-1">
+                      <span className="text-sm">Dashboard</span>
+                    </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                {relevantSegments.length > 0 && <BreadcrumbSeparator />}
-                {relevantSegments.map((segment, index) => {
-                  const href = `/admin/${relevantSegments
-                    .slice(0, index + 1)
-                    .join("/")}`;
-                  const isLast = index === relevantSegments.length - 1;
-                  return (
-                    <React.Fragment key={href}>
-                      <BreadcrumbItem>
-                        {isLast ? (
-                          <BreadcrumbPage className="capitalize">
-                            {segment}
-                          </BreadcrumbPage>
-                        ) : (
-                          <BreadcrumbLink asChild className="capitalize">
-                            <Link href={href}>{segment}</Link>
-                          </BreadcrumbLink>
-                        )}
-                      </BreadcrumbItem>
-                      {!isLast && <BreadcrumbSeparator />}
-                    </React.Fragment>
-                  );
-                })}
+                {relevantSegments.length > 0 && (
+                  <>
+                    <BreadcrumbSeparator>
+                      <ChevronRight className="w-4 h-4 text-foreground/40" />
+                    </BreadcrumbSeparator>
+                    {relevantSegments.map((segment, index) => {
+                      const href = `/admin/${relevantSegments
+                        .slice(0, index + 1)
+                        .join("/")}`;
+                      const isLast = index === relevantSegments.length - 1;
+                      const translatedSegment = translateSegment(segment);
+                      return (
+                        <React.Fragment key={href}>
+                          <BreadcrumbItem>
+                            {isLast ? (
+                              <BreadcrumbPage className="text-sm font-medium text-foreground">
+                                {translatedSegment}
+                              </BreadcrumbPage>
+                            ) : (
+                              <BreadcrumbLink
+                                asChild
+                                className="hover:text-foreground transition-colors"
+                              >
+                                <Link href={href} className="text-sm">
+                                  {translatedSegment}
+                                </Link>
+                              </BreadcrumbLink>
+                            )}
+                          </BreadcrumbItem>
+                          {!isLast && (
+                            <BreadcrumbSeparator>
+                              <ChevronRight className="w-4 h-4 text-foreground/40" />
+                            </BreadcrumbSeparator>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        {children}
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
