@@ -89,7 +89,7 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="hover:bg-sidebar-accent/50">
               <Link href="/admin">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg">
                   <BarChart3 className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
