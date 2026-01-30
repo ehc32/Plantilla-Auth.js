@@ -136,14 +136,14 @@ export default function AdminSessionsPage() {
     const totalPages = Math.ceil(total / limit);
 
     const filterControls = (
-        <div className="flex flex-wrap gap-2 items-end mb-2 w-full justify-between">
+        <div className="flex flex-wrap gap-2 items-end mb-2 w-full justify-between bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4">
             <div className="flex gap-2 items-end">
                 <div className="relative">
-                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40" />
                     <input
                         type="text"
-                        placeholder="Search by email..."
-                        className="pl-8 pr-2 py-2 border rounded-md text-sm bg-background w-[200px]"
+                        placeholder="Buscar por correo..."
+                        className="pl-9 pr-3 py-2 border border-border/50 rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all w-[250px]"
                         value={email}
                         onChange={(e) => {
                             setEmail(e.target.value);
@@ -152,8 +152,8 @@ export default function AdminSessionsPage() {
                     />
                 </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-                {total} active session{total !== 1 ? "s" : ""}
+            <div className="text-sm text-foreground/60">
+                {total} sesión{total !== 1 ? "es activa" : " activa"}
             </div>
         </div>
     );
@@ -228,22 +228,23 @@ export default function AdminSessionsPage() {
         );
     };
 
-    if (error) return <div>Failed to load sessions</div>;
+    if (error) return <div className="p-6 text-destructive">Falló al cargar sesiones</div>;
 
     return (
-        <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-bold tracking-tight">Global Sessions</h1>
-                <p className="text-muted-foreground">
-                    Monitor and manage all active sessions across the platform.
-                </p>
-            </div>
+        <div className="flex-1 overflow-auto bg-gradient-to-b from-background to-background/95">
+            <div className="space-y-6 p-4 md:p-8">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold tracking-tight">Sesiones Globales</h1>
+                    <p className="text-foreground/60">
+                        Supervisa y gestiona todas las sesiones activas en la plataforma
+                    </p>
+                </div>
 
-            <div className="space-y-4">
+                <div className="space-y-4">
                 {filterControls}
-                <div className="overflow-hidden rounded-lg border-muted border-2">
+                <div className="overflow-hidden rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm">
                     <Table className="text-sm">
-                        <TableHeader className="bg-muted sticky top-0 z-10">
+                        <TableHeader className="bg-background/80 sticky top-0 z-10 border-b border-border/30">
                             <TableRow>
                                 {[
                                     { label: "User" },

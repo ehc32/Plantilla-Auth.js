@@ -84,6 +84,15 @@ const getDeviceName = (userAgent: string | null) => {
 export default function AdminAccountPage() {
     const router = useRouter();
     const { data: session, isPending: sessionLoading } = authClient.useSession();
+    
+    // Return wrapper component for styling consistency
+    const PageWrapper = ({ children }: { children: React.ReactNode }) => (
+        <div className="flex-1 overflow-auto bg-gradient-to-b from-background to-background/95">
+            <div className="space-y-6 p-4 md:p-8">
+                {children}
+            </div>
+        </div>
+    );
 
     const [name, setName] = useState("");
     const [saving, setSaving] = useState(false);
@@ -243,18 +252,18 @@ export default function AdminAccountPage() {
     }
 
     return (
-        <div className="container mx-auto p-6 space-y-8 max-w-5xl">
+        <PageWrapper>
             {/* Top Navigation / Breadcrumbs */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <HomeIcon className="h-4 w-4" />
-                    <span className="font-medium text-foreground">General information</span>
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-bold text-foreground">Mi Cuenta</h1>
+                    <p className="text-foreground/60">Gestiona tu información personal y seguridad</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => router.back()}>Discard</Button>
+                    <Button variant="outline" onClick={() => router.back()}>Cancelar</Button>
                     <Button onClick={handleSaveProfile} disabled={saving}>
                         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Changes
+                        Guardar Cambios
                     </Button>
                 </div>
             </div>
@@ -490,6 +499,6 @@ export default function AdminAccountPage() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </PageWrapper>
     );
 }

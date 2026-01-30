@@ -3,7 +3,17 @@
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Users, Settings, LogOut, GalleryVerticalEnd, Shield, User } from "lucide-react";
+import {
+  Users,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  Shield,
+  User,
+  BarChart3,
+  Bell,
+  Lock,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ModeToggle } from "@/components/mode-toggle";
 
@@ -13,6 +23,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -22,19 +33,34 @@ import {
 
 const sidebarNavItems = [
   {
+    href: "/admin",
+    icon: LayoutDashboard,
+    label: "Dashboard",
+    group: "principal",
+  },
+  {
     href: "/admin/users",
     icon: Users,
-    label: "Users",
+    label: "Usuarios",
+    group: "gestión",
   },
   {
     href: "/admin/sessions",
     icon: Shield,
-    label: "Sessions",
+    label: "Sesiones",
+    group: "gestión",
+  },
+  {
+    href: "/admin/settings",
+    icon: Settings,
+    label: "Configuración",
+    group: "sistema",
   },
   {
     href: "/admin/account",
     icon: User,
-    label: "Account",
+    label: "Mi Cuenta",
+    group: "sistema",
   },
 ];
 
@@ -52,38 +78,96 @@ export function DashboardSidebar() {
     }
   };
 
+  const principalItems = sidebarNavItems.filter((item) => item.group === "principal");
+  const gestionItems = sidebarNavItems.filter((item) => item.group === "gestión");
+  const sistemaItems = sidebarNavItems.filter((item) => item.group === "sistema");
+
   return (
-    <Sidebar collapsible="offcanvas" variant="inset">
-      <SidebarHeader>
+    <Sidebar collapsible="offcanvas" variant="inset" className="bg-gradient-to-b from-card to-card/50">
+      <SidebarHeader className="border-b border-border/20">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
+            <SidebarMenuButton size="lg" asChild className="hover:bg-sidebar-accent/50">
+              <Link href="/admin">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg">
+                  <BarChart3 className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Admin Panel</span>
-                  <span className="">v1.0.0</span>
+                  <span className="font-bold text-sm">Admin</span>
+                  <span className="text-xs text-foreground/50">Panel v2.0</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="space-y-4 py-4">
+        {/* Principal */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {sidebarNavItems.map((item) => (
+              {principalItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.label}
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
                   >
                     <Link href={item.href}>
-                      <item.icon />
+                      <item.icon className="size-4" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Gestión */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs font-semibold text-foreground/50 uppercase tracking-widest">
+            Gestión
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {gestionItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={item.label}
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="size-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Sistema */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs font-semibold text-foreground/50 uppercase tracking-widest">
+            Sistema
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {sistemaItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={item.label}
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="size-4" />
                       <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -93,30 +177,22 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-border/20">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center justify-between px-2">
-            <span className="text-xs text-muted-foreground mr-2">Theme</span>
+          <SidebarMenuItem className="flex items-center justify-between px-2 py-2">
+            <span className="text-xs font-semibold text-foreground/50">TEMA</span>
             <ModeToggle />
           </SidebarMenuItem>
-          <SidebarSeparator className="my-2" />
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings">
-              <Link href="/admin/settings">
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <SidebarSeparator className="my-2 bg-border/20" />
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              tooltip="Logout"
-              className="cursor-pointer text-destructive hover:text-destructive"
+              tooltip="Cerrar sesión"
+              className="cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
-              <button onClick={handleLogout}>
+              <button onClick={handleLogout} className="w-full">
                 <LogOut className="h-4 w-4" />
-                <span>Logout</span>
+                <span className="font-medium">Cerrar Sesión</span>
               </button>
             </SidebarMenuButton>
           </SidebarMenuItem>

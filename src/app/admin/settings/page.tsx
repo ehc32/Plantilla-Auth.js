@@ -37,50 +37,55 @@ export default function AdminSettingsPage() {
     };
 
     return (
-        <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-                <p className="text-muted-foreground">
-                    Manage system parameters, credentials, and global configuration.
-                </p>
-            </div>
+        <div className="flex-1 overflow-auto bg-gradient-to-b from-background to-background/95">
+            <div className="space-y-6 p-4 md:p-8">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
+                    <p className="text-foreground/60">
+                        Gestiona parámetros del sistema, credenciales y configuración global
+                    </p>
+                </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* System Parameters Column */}
                 <div className="space-y-6">
-                    <Card>
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <Globe className="h-5 w-5 text-primary" />
-                                <CardTitle>System Parameters</CardTitle>
+                                <div className="p-2 rounded-lg bg-blue-500/10">
+                                    <Globe className="h-5 w-5 text-blue-500" />
+                                </div>
+                                <div>
+                                    <CardTitle>Parámetros del Sistema</CardTitle>
+                                    <CardDescription>
+                                        Configuración general de la aplicación
+                                    </CardDescription>
+                                </div>
                             </div>
-                            <CardDescription>
-                                General configuration for the application.
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="app-name">Application Name</Label>
+                                <Label>Nombre de la Aplicación</Label>
                                 <Input id="app-name" defaultValue="Zexa Better Auth Starter" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="support-email">Support Email</Label>
+                                <Label>Correo de Soporte</Label>
                                 <Input id="support-email" type="email" defaultValue="help@zexa.app" />
                             </div>
-                            <div className="flex items-center justify-between rounded-lg border p-4 shadow-sm">
+                            <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 p-4">
                                 <div className="space-y-0.5">
-                                    <Label className="text-base">Maintenance Mode</Label>
-                                    <p className="text-sm text-muted-foreground">
-                                        Disable access for non-admin users.
+                                    <Label className="text-base">Modo de Mantenimiento</Label>
+                                    <p className="text-sm text-foreground/60">
+                                        Desactiva acceso para usuarios no administradores
                                     </p>
                                 </div>
                                 <Switch />
                             </div>
-                            <div className="flex items-center justify-between rounded-lg border p-4 shadow-sm">
+                            <div className="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 p-4">
                                 <div className="space-y-0.5">
-                                    <Label className="text-base">Public Registration</Label>
-                                    <p className="text-sm text-muted-foreground">
-                                        Allow new users to sign up.
+                                    <Label className="text-base">Registro Público</Label>
+                                    <p className="text-sm text-foreground/60">
+                                        Permite que nuevos usuarios se registren
                                     </p>
                                 </div>
                                 <Switch defaultChecked />
@@ -88,24 +93,28 @@ export default function AdminSettingsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <Database className="h-5 w-5 text-primary" />
-                                <CardTitle>Database & Storage</CardTitle>
+                                <div className="p-2 rounded-lg bg-purple-500/10">
+                                    <Database className="h-5 w-5 text-purple-500" />
+                                </div>
+                                <div>
+                                    <CardTitle>Base de Datos y Almacenamiento</CardTitle>
+                                    <CardDescription>
+                                        Configuración de persistencia (Solo lectura)
+                                    </CardDescription>
+                                </div>
                             </div>
-                            <CardDescription>
-                                Configuration for data persistence (Read-only).
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Database Provider</Label>
-                                <Input value="PostgreSQL" disabled readOnly className="bg-muted" />
+                                <Label>Proveedor de Base de Datos</Label>
+                                <Input value="PostgreSQL" disabled readOnly className="bg-background/50 border-border/50" />
                             </div>
                             <div className="space-y-2">
-                                <Label>ORM Version</Label>
-                                <Input value="Drizzle v0.30.0" disabled readOnly className="bg-muted" />
+                                <Label>Versión ORM</Label>
+                                <Input value="Drizzle v0.30.0" disabled readOnly className="bg-background/50 border-border/50" />
                             </div>
                         </CardContent>
                     </Card>
@@ -113,72 +122,80 @@ export default function AdminSettingsPage() {
 
                 {/* Credentials & Security Column */}
                 <div className="space-y-6">
-                    <Card>
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <Lock className="h-5 w-5 text-primary" />
-                                <CardTitle>Credentials & Integrations</CardTitle>
+                                <div className="p-2 rounded-lg bg-red-500/10">
+                                    <Lock className="h-5 w-5 text-red-500" />
+                                </div>
+                                <div>
+                                    <CardTitle>Credenciales e Integraciones</CardTitle>
+                                    <CardDescription>
+                                        Gestiona claves API y conexiones de servicios externos
+                                    </CardDescription>
+                                </div>
                             </div>
-                            <CardDescription>
-                                Manage API keys and external service connections.
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4">
                                 <div className="space-y-2">
-                                    <Label>Google Client ID</Label>
+                                    <Label>ID de Cliente Google</Label>
                                     <div className="flex gap-2">
                                         <Input type="password" value="************************" readOnly />
-                                        <Button variant="outline" size="sm">Update</Button>
+                                        <Button variant="outline" size="sm">Actualizar</Button>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>GitHub Client ID</Label>
+                                    <Label>ID de Cliente GitHub</Label>
                                     <div className="flex gap-2">
                                         <Input type="password" value="************************" readOnly />
-                                        <Button variant="outline" size="sm">Update</Button>
+                                        <Button variant="outline" size="sm">Actualizar</Button>
                                     </div>
                                 </div>
                             </div>
-                            <Separator className="my-2" />
+                            <Separator className="my-2 bg-border/20" />
                             <div className="space-y-2">
-                                <Label>Stripe Secret Key</Label>
+                                <Label>Clave Secreta de Stripe</Label>
                                 <Input type="password" placeholder="sk_live_..." />
                             </div>
                             <div className="space-y-2">
-                                <Label>OpenAI API Key</Label>
+                                <Label>Clave API de OpenAI</Label>
                                 <Input type="password" placeholder="sk-..." />
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
                         <CardHeader>
                             <div className="flex items-center gap-2">
-                                <Mail className="h-5 w-5 text-primary" />
-                                <CardTitle>SMTP Configuration</CardTitle>
+                                <div className="p-2 rounded-lg bg-orange-500/10">
+                                    <Mail className="h-5 w-5 text-orange-500" />
+                                </div>
+                                <div>
+                                    <CardTitle>Configuración SMTP</CardTitle>
+                                    <CardDescription>
+                                        Configuración del servidor de correo para notificaciones
+                                    </CardDescription>
+                                </div>
                             </div>
-                            <CardDescription>
-                                Email server settings for system notifications.
-                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Host</Label>
+                                    <Label>Servidor</Label>
                                     <Input placeholder="smtp.resend.com" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Port</Label>
+                                    <Label>Puerto</Label>
                                     <Input placeholder="587" />
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label>Username</Label>
+                                <Label>Usuario</Label>
                                 <Input placeholder="resend" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Password</Label>
+                                <Label>Contraseña</Label>
                                 <Input type="password" value="re_123456789" />
                             </div>
                         </CardContent>
@@ -186,18 +203,19 @@ export default function AdminSettingsPage() {
                 </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-4">
-                <Button variant="outline">Cancel</Button>
-                <Button onClick={handleSave} disabled={loading} className="min-w-[120px]">
-                    {loading ? (
-                        <>Saving...</>
-                    ) : (
-                        <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
-                        </>
-                    )}
-                </Button>
+                <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-border/20">
+                    <Button variant="outline">Cancelar</Button>
+                    <Button onClick={handleSave} disabled={loading} className="min-w-[140px]">
+                        {loading ? (
+                            <>Guardando...</>
+                        ) : (
+                            <>
+                                <Save className="mr-2 h-4 w-4" />
+                                Guardar Cambios
+                            </>
+                        )}
+                    </Button>
+                </div>
             </div>
         </div>
     );
