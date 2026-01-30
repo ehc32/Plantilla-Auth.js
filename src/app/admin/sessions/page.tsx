@@ -401,11 +401,12 @@ export default function AdminSessionsPage() {
                         </TableBody>
                     </Table>
                 </div>
-                <div className="flex items-center justify-between px-4 py-1">
-                    <div className="text-sm text-muted-foreground">
-                        Showing {sessions.length} of {total} sessions
+                    <div className="flex items-center justify-between px-4 py-1">
+                        <div className="text-sm text-muted-foreground">
+                            Showing {sessions.length} of {total} sessions
+                        </div>
+                        {renderPagination()}
                     </div>
-                    {renderPagination()}
                 </div>
             </div>
         </div>
