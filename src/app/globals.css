@@ -179,19 +179,30 @@ textarea:focus {
 
 /* Admin Dashboard Enhancements */
 .admin-card {
-  @apply relative overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-all duration-300;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  opacity: 0.5;
+  background-color: var(--card);
+  background-color: color-mix(in srgb, var(--card) 50%, transparent);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s;
 }
 
 .admin-card:hover {
-  @apply shadow-lg shadow-primary/5;
+  border-color: var(--border);
+  box-shadow: 0 10px 25px color-mix(in srgb, var(--primary) 5%, transparent);
 }
 
 .admin-stat-card {
-  @apply admin-card rounded-lg p-6 cursor-pointer group;
+  border-radius: calc(var(--radius));
+  padding: 1.5rem;
+  cursor: pointer;
 }
 
 .admin-chart-card {
-  @apply admin-card rounded-lg p-6;
+  border-radius: calc(var(--radius));
+  padding: 1.5rem;
 }
 
 /* Smooth Scrollbar */
