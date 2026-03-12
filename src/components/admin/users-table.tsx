@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import useSWR from "swr";
 import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -122,9 +123,17 @@ export function UsersTable() {
     mutate();
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 8 },
+    show: { opacity: 1, y: 0, transition: { staggerChildren: 0.05 } },
+  };
+
   // Filter and sort controls
   const filterControls = (
-    <div className="flex flex-wrap gap-2 items-end mb-2 w-full justify-between">
+    <motion.div
+      className="flex flex-wrap gap-2 items-end mb-2 w-full justify-between"
+      variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+    >
       <div className="flex gap-2 items-end">
         {/* Search by email */}
         <div className="relative">
@@ -192,7 +201,9 @@ export function UsersTable() {
           onClick={() => mutate()}
           disabled={isLoading}
         >
-          <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCcw
+            className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
         <Button
@@ -203,7 +214,7 @@ export function UsersTable() {
           Add a user
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 
   if (error) return <div>Failed to load users</div>;
@@ -355,7 +366,12 @@ export function UsersTable() {
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      className="space-y-4"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {filterControls}
       <div className="overflow-hidden rounded-lg border-muted border-2 ">
         <Table className="text-sm ">
@@ -388,164 +404,171 @@ export function UsersTable() {
           <TableBody>
             {isLoading
               ? Array.from({ length: 3 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-[120px]" />
-                        <Skeleton className="h-3 w-[160px]" />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-6 w-[80px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex -space-x-2">
-                      {Array.from({ length: 2 }).map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-8 rounded-full" />
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-6 w-[60px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-4 w-[140px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-4 w-[140px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                  </TableCell>
-                </TableRow>
-              ))
-              : users.map((user: UserWithDetails) => (
-                <TableRow key={user.id}>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <Avatar>
-                        <AvatarImage src={user.avatarUrl} alt={user.name} />
-                        <AvatarFallback className="text-xs">
-                          {user.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-foreground">
-                          {user.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {user.email.replace(/^[^@]+/, (match) =>
-                            "*".repeat(match.length),
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {user.verified ? (
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700 flex items-center gap-1 px-2 py-1 text-xs"
-                      >
-                        <CheckCircle className="h-3 w-3" />
-                        Verified
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-700 flex items-center gap-1 px-2 py-1 text-xs"
-                      >
-                        <XCircle className="h-3 w-3" />
-                        Unverified
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex -space-x-2">
-                      {user.accounts.map((account) => (
-                        <div
-                          key={account}
-                          className="rounded-full bg-muted p-1.5 text-muted-foreground dark:bg-neutral-700"
-                          title={account}
-                        >
-                          {getAccountIcon(account)}
+                  <TableRow key={index}>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex items-center gap-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-[120px]" />
+                          <Skeleton className="h-3 w-[160px]" />
                         </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Badge
-                      variant="outline"
-                      className={`flex items-center gap-1 px-2 py-1 text-xs ${user.role === "admin"
-                        ? "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700"
-                        : "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700"
-                        }`}
-                    >
-                      {user.role === "admin" ? (
-                        <Shield className="h-3 w-3" />
-                      ) : (
-                        <User className="h-3 w-3" />
-                      )}
-                      {user.role
-                        ? user.role.charAt(0).toUpperCase() +
-                        user.role.slice(1)
-                        : "User"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {user.banned ? (
-                      <div className="flex flex-col gap-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge
-                              variant="destructive"
-                              className="flex items-center gap-1 px-2 py-1 text-xs cursor-help"
-                            >
-                              <Ban className="h-3 w-3" />
-                              Banned
-                            </Badge>
-                          </TooltipTrigger>
-                          {user.banReason && (
-                            <TooltipContent>
-                              Reason: {user.banReason}
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                        {user.banExpires && (
-                          <span className="text-xs text-muted-foreground">
-                            Expires: {format(user.banExpires, "MMM d, yyyy")}
-                          </span>
-                        )}
                       </div>
-                    ) : (
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Skeleton className="h-6 w-[80px]" />
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex -space-x-2">
+                        {Array.from({ length: 2 }).map((_, i) => (
+                          <Skeleton key={i} className="h-8 w-8 rounded-full" />
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Skeleton className="h-6 w-[60px]" />
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Skeleton className="h-4 w-[140px]" />
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Skeleton className="h-4 w-[140px]" />
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              : users.map((user: UserWithDetails) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="border-b transition-colors hover:bg-muted/40 data-[state=selected]:bg-muted"
+                  >
+                    <TableCell className="px-4 py-3">
+                      <div className="flex items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={user.avatarUrl} alt={user.name} />
+                          <AvatarFallback className="text-xs">
+                            {user.name.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-foreground">
+                            {user.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {user.email.replace(/^[^@]+/, (match) =>
+                              "*".repeat(match.length),
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {user.verified ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-muted text-foreground border-border flex items-center gap-1 px-2 py-1 text-xs"
+                        >
+                          <CheckCircle className="h-3 w-3" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="bg-secondary text-secondary-foreground border-border flex items-center gap-1 px-2 py-1 text-xs"
+                        >
+                          <XCircle className="h-3 w-3" />
+                          Unverified
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex -space-x-2">
+                        {user.accounts.map((account) => (
+                          <div
+                            key={account}
+                            className="rounded-full bg-muted p-1.5 text-muted-foreground dark:bg-neutral-700"
+                            title={account}
+                          >
+                            {getAccountIcon(account)}
+                          </div>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
                       <Badge
                         variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700 flex items-center gap-1 px-2 py-1 text-xs"
+                        className={`flex items-center gap-1 px-2 py-1 text-xs ${
+                          user.role === "admin"
+                            ? "bg-muted text-foreground border-border"
+                            : "bg-secondary text-secondary-foreground border-border"
+                        }`}
                       >
-                        <Check className="h-3 w-3" />
-                        Active
+                        {user.role === "admin" ? (
+                          <Shield className="h-3 w-3" />
+                        ) : (
+                          <User className="h-3 w-3" />
+                        )}
+                        {user.role
+                          ? user.role.charAt(0).toUpperCase() +
+                            user.role.slice(1)
+                          : "User"}
                       </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-xs text-muted-foreground">
-                    {user.lastSignIn
-                      ? format(user.lastSignIn, "MMM d, yyyy 'at' h:mm a")
-                      : "Never"}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-xs text-muted-foreground">
-                    {format(user.createdAt, "MMM d, yyyy 'at' h:mm a")}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <UserActions
-                      user={user}
-                      onActionComplete={handleActionComplete}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      {user.banned ? (
+                        <div className="flex flex-col gap-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge
+                                variant="outline"
+                                className="flex items-center gap-1 px-2 py-1 text-xs cursor-help border-foreground/30 bg-foreground/10 text-foreground"
+                              >
+                                <Ban className="h-3 w-3" />
+                                Banned
+                              </Badge>
+                            </TooltipTrigger>
+                            {user.banReason && (
+                              <TooltipContent>
+                                Reason: {user.banReason}
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                          {user.banExpires && (
+                            <span className="text-xs text-muted-foreground">
+                              Expires: {format(user.banExpires, "MMM d, yyyy")}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="bg-muted text-foreground border-border flex items-center gap-1 px-2 py-1 text-xs"
+                        >
+                          <Check className="h-3 w-3" />
+                          Active
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-muted-foreground">
+                      {user.lastSignIn
+                        ? format(user.lastSignIn, "MMM d, yyyy 'at' h:mm a")
+                        : "Never"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-xs text-muted-foreground">
+                      {format(user.createdAt, "MMM d, yyyy 'at' h:mm a")}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <UserActions
+                        user={user}
+                        onActionComplete={handleActionComplete}
+                      />
+                    </TableCell>
+                  </motion.tr>
+                ))}
           </TableBody>
         </Table>
       </div>
@@ -560,6 +583,6 @@ export function UsersTable() {
         onClose={() => setIsAddDialogOpen(false)}
         onSuccess={() => mutate()}
       />
-    </div>
+    </motion.div>
   );
 }
