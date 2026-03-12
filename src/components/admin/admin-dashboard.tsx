@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
-  BarChart,
-  Bar,
   LineChart,
   Line,
   XAxis,
@@ -23,6 +22,7 @@ import {
   TrendingUp,
   Calendar,
   Clock,
+  LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -50,8 +50,17 @@ const COLORS = [
   "var(--color-chart-5)",
 ];
 
+type StatCardProps = {
+  title: string;
+  value: number | string;
+  change?: string;
+  icon: LucideIcon;
+  link: string;
+  cardTone?: string;
+};
+
 export function AdminDashboard() {
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalUsers: 245,
     activeUsers: 180,
     activeSessions: 240,
@@ -61,11 +70,24 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Simular carga de datos
     setLoading(true);
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 12 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
 
   const StatCard = ({
     title,
@@ -74,57 +96,64 @@ export function AdminDashboard() {
     icon: Icon,
     link,
     cardTone,
-  }: {
-    title: string;
-    value: number | string;
-    change?: string;
-    icon: any;
-    link: string;
-    cardTone?: string;
-  }) => (
-    <Link href={link}>
-      <Card
-        className={`overflow-hidden cursor-pointer group relative transition-all duration-200 hover:-translate-y-0.5 border border-border/70 bg-card ${cardTone ?? ""} p-6`}
-      >
-        <div className="flex items-start justify-between relative z-10">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground/70 mb-2">
-              {title}
-            </p>
-            <h3 className="text-3xl font-bold text-foreground mb-1">{value}</h3>
-            {change && (
-              <p className="text-xs text-muted-foreground font-medium">
-                {change}
+  }: StatCardProps) => (
+    <motion.div variants={itemVariants}>
+      <Link href={link}>
+        <Card
+          className={`overflow-hidden cursor-pointer group relative transition-all duration-200 hover:-translate-y-0.5 border border-border/70 bg-card ${cardTone ?? ""} p-6`}
+        >
+          <div className="flex items-start justify-between relative z-10">
+            <div className="flex-1">
+              <p className="mb-2 text-sm font-medium text-foreground/70">
+                {title}
               </p>
-            )}
+              <h3 className="mb-1 text-3xl font-bold text-foreground">
+                {value}
+              </h3>
+              {change && (
+                <p className="text-xs font-medium text-muted-foreground">
+                  {change}
+                </p>
+              )}
+            </div>
+
+            <div className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-muted">
+              <Icon className="h-6 w-6 text-foreground/80" />
+            </div>
           </div>
-          <div className="flex items-center justify-center w-11 h-11 rounded-md border border-border bg-muted">
-            <Icon className="w-6 h-6 text-foreground/80" />
-          </div>
-        </div>
-      </Card>
-    </Link>
+        </Card>
+      </Link>
+    </motion.div>
   );
 
   return (
-    <div className="min-h-screen p-4 md:p-8 space-y-8">
+    <motion.div
+      className="min-h-screen space-y-8 p-4 md:p-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-4xl font-bold text-foreground">Panel de Control</h1>
+      <motion.div className="space-y-2" variants={itemVariants}>
+        <h1 className="text-4xl font-bold text-foreground">
+          Panel de Control
+        </h1>
         <p className="text-foreground/60">
           Bienvenido al panel de administración
         </p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.div
+        className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+        variants={itemVariants}
+      >
         <StatCard
           title="Total de Usuarios"
           value={stats.totalUsers}
           change="+12% este mes"
           icon={Users}
           link="/admin/users"
-          cardTone=""
         />
         <StatCard
           title="Usuarios Activos"
@@ -132,7 +161,6 @@ export function AdminDashboard() {
           change="+8% últimas 24h"
           icon={Activity}
           link="/admin/users"
-          cardTone=""
         />
         <StatCard
           title="Sesiones Activas"
@@ -140,7 +168,6 @@ export function AdminDashboard() {
           change="+5% hoy"
           icon={Shield}
           link="/admin/sessions"
-          cardTone=""
         />
         <StatCard
           title="Eventos Seguridad"
@@ -148,48 +175,25 @@ export function AdminDashboard() {
           change="-3% últimos 7 días"
           icon={TrendingUp}
           link="/admin/sessions"
-          cardTone=""
         />
-      </div>
+      </motion.div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div
+        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+        variants={itemVariants}
+      >
         {/* Activity Chart */}
-        <Card className="lg:col-span-2 p-6 border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
+        <Card className="bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border border-border/50 lg:col-span-2">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-foreground">
               Actividad de Usuarios
             </h2>
             <p className="text-sm text-foreground/60">Últimos 7 días</p>
           </div>
+
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={userActivityData}>
-              <defs>
-                <linearGradient id="colorUsuarios" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-chart-1)"
-                    stopOpacity={0.35}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-chart-1)"
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-                <linearGradient id="colorActivos" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-chart-3)"
-                    stopOpacity={0.35}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-chart-3)"
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="var(--color-border)"
@@ -239,13 +243,14 @@ export function AdminDashboard() {
         </Card>
 
         {/* Session Distribution */}
-        <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors flex flex-col">
+        <Card className="flex flex-col border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground mb-1">
+            <h2 className="mb-1 text-lg font-semibold text-foreground">
               Distribución de Sesiones
             </h2>
             <p className="text-sm text-foreground/60">Estado actual</p>
           </div>
+
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -261,6 +266,7 @@ export function AdminDashboard() {
                   <Cell key={`cell-${index}`} fill={COLORS[index]} />
                 ))}
               </Pie>
+
               <Tooltip
                 contentStyle={{
                   backgroundColor: "var(--color-card)",
@@ -270,6 +276,7 @@ export function AdminDashboard() {
               />
             </PieChart>
           </ResponsiveContainer>
+
           <div className="mt-6 space-y-3">
             {sessionData.map((item) => (
               <div
@@ -278,7 +285,7 @@ export function AdminDashboard() {
               >
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: item.color }}
                   />
                   <span className="text-sm text-foreground/70">
@@ -292,18 +299,22 @@ export function AdminDashboard() {
             ))}
           </div>
         </Card>
-      </div>
+      </motion.div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Quick Sections */}
+      <motion.div
+        className="grid grid-cols-1 gap-6 md:grid-cols-2"
+        variants={itemVariants}
+      >
         {/* Recent Activity */}
-        <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border">
+          <div className="mb-6 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">
               Actividad Reciente
             </h2>
-            <Clock className="w-5 h-5 text-foreground/40" />
+            <Clock className="h-5 w-5 text-foreground/40" />
           </div>
+
           <div className="space-y-4">
             {[
               {
@@ -324,16 +335,16 @@ export function AdminDashboard() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-3 pb-3 border-b border-border/20 last:border-b-0"
+                className="flex items-start gap-3 border-b border-border/20 pb-3 last:border-b-0"
               >
-                <div className="w-2 h-2 rounded-full bg-foreground/50 mt-2 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
+                <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-foreground/50" />
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground">
                     {item.action}
                   </p>
-                  <p className="text-xs text-foreground/60 mt-1">{item.user}</p>
+                  <p className="mt-1 text-xs text-foreground/60">{item.user}</p>
                 </div>
-                <span className="text-xs text-foreground/40 flex-shrink-0">
+                <span className="flex-shrink-0 text-xs text-foreground/40">
                   {item.time}
                 </span>
               </div>
@@ -342,13 +353,14 @@ export function AdminDashboard() {
         </Card>
 
         {/* Quick Stats */}
-        <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm hover:border-border transition-colors">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border">
+          <div className="mb-6 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">
               Estadísticas Rápidas
             </h2>
-            <Calendar className="w-5 h-5 text-foreground/40" />
+            <Calendar className="h-5 w-5 text-foreground/40" />
           </div>
+
           <div className="space-y-4">
             {[
               {
@@ -372,17 +384,19 @@ export function AdminDashboard() {
             ].map((stat, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors"
+                className="flex items-center justify-between rounded-lg bg-background/50 p-3 transition-colors hover:bg-background/80"
               >
                 <div>
                   <p className="text-sm text-foreground/70">{stat.label}</p>
-                  <p className="text-lg font-semibold text-foreground mt-1">
+                  <p className="mt-1 text-lg font-semibold text-foreground">
                     {stat.value}
                   </p>
                 </div>
                 <span
                   className={`text-sm font-semibold ${
-                    stat.positive ? "text-foreground" : "text-muted-foreground"
+                    stat.positive
+                      ? "text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {stat.change}
@@ -391,7 +405,7 @@ export function AdminDashboard() {
             ))}
           </div>
         </Card>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
