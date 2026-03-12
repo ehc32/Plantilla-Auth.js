@@ -11,8 +11,6 @@ import {
   Shield,
   User,
   BarChart3,
-  Bell,
-  Lock,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -78,23 +76,33 @@ export function DashboardSidebar() {
     }
   };
 
-  const principalItems = sidebarNavItems.filter((item) => item.group === "principal");
-  const gestionItems = sidebarNavItems.filter((item) => item.group === "gestión");
-  const sistemaItems = sidebarNavItems.filter((item) => item.group === "sistema");
+  const principalItems = sidebarNavItems.filter(
+    (item) => item.group === "principal",
+  );
+  const gestionItems = sidebarNavItems.filter(
+    (item) => item.group === "gestión",
+  );
+  const sistemaItems = sidebarNavItems.filter(
+    (item) => item.group === "sistema",
+  );
 
   return (
-    <Sidebar collapsible="offcanvas" variant="inset" className="bg-gradient-to-b from-card to-card/50">
+    <Sidebar collapsible="offcanvas" variant="inset" className="bg-sidebar">
       <SidebarHeader className="border-b border-border/20">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="hover:bg-sidebar-accent/50">
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="hover:bg-sidebar-accent"
+            >
               <Link href="/admin">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-md border border-sidebar-border bg-sidebar-primary text-sidebar-primary-foreground">
                   <BarChart3 className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-bold text-sm">Admin</span>
-                  <span className="text-xs text-foreground/50">Panel v2.0</span>
+                  <span className="text-xs text-foreground/50">Panel</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -112,7 +120,7 @@ export function DashboardSidebar() {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.label}
-                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent"
                   >
                     <Link href={item.href}>
                       <item.icon className="size-4" />
@@ -138,7 +146,7 @@ export function DashboardSidebar() {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.label}
-                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent"
                   >
                     <Link href={item.href}>
                       <item.icon className="size-4" />
@@ -164,7 +172,7 @@ export function DashboardSidebar() {
                     asChild
                     isActive={pathname === item.href}
                     tooltip={item.label}
-                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent/60"
+                    className="relative transition-all duration-200 data-[active=true]:bg-sidebar-accent"
                   >
                     <Link href={item.href}>
                       <item.icon className="size-4" />
@@ -180,7 +188,9 @@ export function DashboardSidebar() {
       <SidebarFooter className="border-t border-border/20">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-between px-2 py-2">
-            <span className="text-xs font-semibold text-foreground/50">TEMA</span>
+            <span className="text-xs font-semibold text-foreground/50">
+              TEMA
+            </span>
             <ModeToggle />
           </SidebarMenuItem>
           <SidebarSeparator className="my-2 bg-border/20" />
@@ -188,7 +198,7 @@ export function DashboardSidebar() {
             <SidebarMenuButton
               asChild
               tooltip="Cerrar sesión"
-              className="cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+              className="cursor-pointer text-foreground/70 hover:text-foreground hover:bg-sidebar-accent transition-colors"
             >
               <button onClick={handleLogout} className="w-full">
                 <LogOut className="h-4 w-4" />
