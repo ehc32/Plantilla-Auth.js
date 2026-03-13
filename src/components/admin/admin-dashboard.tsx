@@ -22,7 +22,8 @@ import {
   TrendingUp,
   Calendar,
   Clock,
-  LucideIcon,
+  Database,
+  type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -100,9 +101,9 @@ export function AdminDashboard() {
     <motion.div variants={itemVariants}>
       <Link href={link}>
         <Card
-          className={`overflow-hidden cursor-pointer group relative transition-all duration-200 hover:-translate-y-0.5 border border-border/70 bg-card ${cardTone ?? ""} p-6`}
+          className={`relative cursor-pointer overflow-hidden border border-border/70 bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 group ${cardTone ?? ""}`}
         >
-          <div className="flex items-start justify-between relative z-10">
+          <div className="relative z-10 flex items-start justify-between">
             <div className="flex-1">
               <p className="mb-2 text-sm font-medium text-foreground/70">
                 {title}
@@ -184,7 +185,7 @@ export function AdminDashboard() {
         variants={itemVariants}
       >
         {/* Activity Chart */}
-        <Card className="bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border border-border/50 lg:col-span-2">
+        <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border lg:col-span-2">
           <div className="mb-6">
             <h2 className="mb-1 text-lg font-semibold text-foreground">
               Actividad de Usuarios
@@ -303,7 +304,7 @@ export function AdminDashboard() {
 
       {/* Quick Sections */}
       <motion.div
-        className="grid grid-cols-1 gap-6 md:grid-cols-2"
+        className="grid grid-cols-1 gap-6 md:grid-cols-3"
         variants={itemVariants}
       >
         {/* Recent Activity */}
@@ -342,7 +343,9 @@ export function AdminDashboard() {
                   <p className="text-sm font-medium text-foreground">
                     {item.action}
                   </p>
-                  <p className="mt-1 text-xs text-foreground/60">{item.user}</p>
+                  <p className="mt-1 text-xs text-foreground/60">
+                    {item.user}
+                  </p>
                 </div>
                 <span className="flex-shrink-0 text-xs text-foreground/40">
                   {item.time}
@@ -350,6 +353,26 @@ export function AdminDashboard() {
               </div>
             ))}
           </div>
+        </Card>
+
+        {/* Backup */}
+        <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-colors hover:border-border">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">
+              Respaldo del Sistema
+            </h2>
+            <Database className="h-5 w-5 text-foreground/40" />
+          </div>
+          <p className="mb-6 text-sm text-foreground/60">
+            Crea snapshots de usuarios, sesiones y cuentas para recuperación
+            operativa rápida.
+          </p>
+          <Link
+            href="/admin/backups"
+            className="inline-flex items-center rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            Ir a Backups
+          </Link>
         </Card>
 
         {/* Quick Stats */}

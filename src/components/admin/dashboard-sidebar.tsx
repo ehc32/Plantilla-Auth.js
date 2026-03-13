@@ -60,6 +60,12 @@ const sidebarNavItems = [
     label: "Mi Cuenta",
     group: "sistema",
   },
+  {
+    href: "/admin/backups",
+    icon: Database,
+    label: "Backups",
+    group: "sistema",
+  },
 ];
 
 export function DashboardSidebar() {

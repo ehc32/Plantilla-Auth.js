@@ -34,7 +34,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserWithDetails } from "@/utils/users";
@@ -63,39 +62,64 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
+const TABLE_COLUMNS = [
+  { label: "Nombre" },
+  { label: "Verificación" },
+  { label: "Cuentas vinculadas" },
+  { label: "Rol" },
+  { label: "Estado" },
+  { label: "Último acceso" },
+  { label: "Creado" },
+  { label: "Acciones", className: "w-[80px]" },
+];
+
+const SKELETON_ROWS = Array.from({ length: 3 });
+
 const getAccountIcon = (account: string) => {
   switch (account) {
     case "credential":
-      return <Mail className="h-4 w-4 dark:text-neutral-300" />;
+      return <Mail className="h-4 w-4 text-muted-foreground" />;
     case "github":
-      return <GithubIcon className="h-4 w-4 dark:text-neutral-300" />;
+      return <GithubIcon className="h-4 w-4 text-muted-foreground" />;
     case "google":
-      return <GoogleIcon className="h-4 w-4 dark:text-neutral-300" />;
+      return <GoogleIcon className="h-4 w-4 text-muted-foreground" />;
     default:
       return null;
   }
 };
 
-const formatDateSafe = (date: string | Date | null | undefined, pattern: string) => {
-  if (!date) return "Never";
+const formatDateSafe = (
+  date: string | Date | null | undefined,
+  pattern: string,
+) => {
+  if (!date) return "Nunca";
   const parsed = date instanceof Date ? date : new Date(date);
-  return isNaN(parsed.getTime()) ? "Invalid date" : format(parsed, pattern);
+  return Number.isNaN(parsed.getTime()) ? "Fecha inválida" : format(parsed, pattern);
+};
+
+const maskEmail = (email: string) =>
+  email.replace(/^[^@]+/, (match) => "*".repeat(match.length));
+
+const getInitialPage = (value: string | null) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
 };
 
 export function UsersTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [role, setRole] = useState(searchParams.get("role") || "all");
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [debouncedEmail, setDebouncedEmail] = useState(email);
-  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
+  const [page, setPage] = useState(getInitialPage(searchParams.get("page")));
+
   const limit = 10;
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedEmail(email);
+      setDebouncedEmail(email.trim());
     }, 300);
 
     return () => clearTimeout(timer);
@@ -106,7 +130,7 @@ export function UsersTable() {
 
     if (role && role !== "all") params.set("role", role);
     if (debouncedEmail) params.set("email", debouncedEmail);
-    if (page) params.set("page", String(page));
+    params.set("page", String(page));
     params.set("limit", String(limit));
 
     router.replace(`?${params.toString()}`);
@@ -126,7 +150,18 @@ export function UsersTable() {
   const { data, error, mutate, isLoading } = useSWR(swrKey, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 2000,
+    keepPreviousData: true,
   });
+
+  const users: UserWithDetails[] = data?.users ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 0;
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   const handleActionComplete = () => {
     mutate();
@@ -137,175 +172,48 @@ export function UsersTable() {
     show: { opacity: 1, y: 0, transition: { staggerChildren: 0.05 } },
   };
 
-  const filterControls = (
-    <motion.div
-      className="mb-2 flex w-full flex-wrap items-end justify-between gap-2"
-      variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-    >
-      <div className="flex items-end gap-2">
-        <div className="relative">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search email..."
-            className="w-[200px] rounded-md border bg-background py-2 pl-8 pr-2 text-sm"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
+  const currentFrom = total === 0 ? 0 : (page - 1) * limit + 1;
+  const currentTo = total === 0 ? 0 : (page - 1) * limit + users.length;
 
-        <Select
-          value={role}
-          onValueChange={(value) => {
-            setRole(value);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="flex w-[140px] items-center gap-2">
-            <span className="flex items-center gap-2">
-              {role === "all" ? (
-                <Users className="h-4 w-4" />
-              ) : role === "admin" ? (
-                <Shield className="h-4 w-4" />
-              ) : (
-                <User className="h-4 w-4" />
-              )}
-              {role === "all"
-                ? "All Roles"
-                : role.charAt(0).toUpperCase() + role.slice(1)}
-            </span>
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="all">
-              <span className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                All Roles
-              </span>
-            </SelectItem>
-            <SelectItem value="admin">
-              <span className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Admin
-              </span>
-            </SelectItem>
-            <SelectItem value="user">
-              <span className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                User
-              </span>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="ml-auto flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 gap-1"
-          onClick={() => mutate()}
-          disabled={isLoading}
-        >
-          <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
-
-        <Button
-          onClick={() => setIsAddDialogOpen(true)}
-          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90"
-        >
-          <UserPlus className="h-4 w-4" />
-          Add a user
-        </Button>
-      </div>
-    </motion.div>
-  );
-
-  if (error) {
-    return <div>Failed to load users</div>;
-  }
-
-  if (!data) {
-    return (
-      <div className="space-y-4 border-accent-foreground">
-        {filterControls}
-        <div className="overflow-hidden">
-          <Table className="text-sm">
-            <TableHeader>
-              <TableRow>
-                {[
-                  { label: "Name" },
-                  { label: "Verification" },
-                  { label: "Linked Accounts" },
-                  { label: "Role" },
-                  { label: "Status" },
-                  { label: "Last Sign In" },
-                  { label: "Created At" },
-                  { label: "Actions", className: "w-[80px]" },
-                ].map((col) => (
-                  <TableHead
-                    key={col.label}
-                    className={[
-                      col.className,
-                      "px-4 py-3 text-xs font-medium text-muted-foreground",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                  >
-                    {col.label}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-[120px]" />
-                        <Skeleton className="h-3 w-[160px]" />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-6 w-[80px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex -space-x-2">
-                      {Array.from({ length: 2 }).map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-8 rounded-full" />
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-6 w-[60px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-4 w-[140px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-4 w-[140px]" />
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    );
-  }
-
-  const { users = [], total = 0, totalPages = 0 } = data;
+  const renderSkeletonRows = () =>
+    SKELETON_ROWS.map((_, index) => (
+      <TableRow key={index}>
+        <TableCell className="px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[120px]" />
+              <Skeleton className="h-3 w-[160px]" />
+            </div>
+          </div>
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-6 w-[90px]" />
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <div className="flex -space-x-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-8 rounded-full" />
+            ))}
+          </div>
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-6 w-[70px]" />
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-4 w-[120px]" />
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-4 w-[140px]" />
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-4 w-[140px]" />
+        </TableCell>
+        <TableCell className="px-4 py-4">
+          <Skeleton className="h-8 w-8 rounded-md" />
+        </TableCell>
+      </TableRow>
+    ));
 
   const renderPagination = () => {
     if (totalPages <= 1) return null;
@@ -335,7 +243,7 @@ export function UsersTable() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               aria-disabled={page === 1}
               tabIndex={page === 1 ? -1 : 0}
-              className={page === 1 ? "pointer-events-none opacity-50" : ""}
+              className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
             />
           </PaginationItem>
 
@@ -344,7 +252,11 @@ export function UsersTable() {
               <PaginationItem>
                 <PaginationLink onClick={() => setPage(1)}>1</PaginationLink>
               </PaginationItem>
-              {startPage > 2 && <PaginationEllipsis />}
+              {startPage > 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
             </>
           )}
 
@@ -353,6 +265,7 @@ export function UsersTable() {
               <PaginationLink
                 isActive={pNum === page}
                 onClick={() => setPage(pNum)}
+                className="cursor-pointer"
               >
                 {pNum}
               </PaginationLink>
@@ -361,9 +274,16 @@ export function UsersTable() {
 
           {endPage < totalPages && (
             <>
-              {endPage < totalPages - 1 && <PaginationEllipsis />}
+              {endPage < totalPages - 1 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
               <PaginationItem>
-                <PaginationLink onClick={() => setPage(totalPages)}>
+                <PaginationLink
+                  onClick={() => setPage(totalPages)}
+                  className="cursor-pointer"
+                >
                   {totalPages}
                 </PaginationLink>
               </PaginationItem>
@@ -375,13 +295,111 @@ export function UsersTable() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               aria-disabled={page === totalPages}
               tabIndex={page === totalPages ? -1 : 0}
-              className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+              className={
+                page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
+              }
             />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
     );
   };
+
+  const filterControls = (
+    <motion.div
+      className="mb-3 flex w-full flex-col gap-3 md:flex-row md:items-end md:justify-between"
+      variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar por email..."
+            className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-[240px]"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+
+        <Select
+          value={role}
+          onValueChange={(value) => {
+            setRole(value);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="h-10 w-full sm:w-[160px]">
+            <span className="flex items-center gap-2">
+              {role === "all" ? (
+                <Users className="h-4 w-4" />
+              ) : role === "admin" ? (
+                <Shield className="h-4 w-4" />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
+              {role === "all"
+                ? "Todos los roles"
+                : role.charAt(0).toUpperCase() + role.slice(1)}
+            </span>
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="all">
+              <span className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Todos los roles
+              </span>
+            </SelectItem>
+            <SelectItem value="admin">
+              <span className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Admin
+              </span>
+            </SelectItem>
+            <SelectItem value="user">
+              <span className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                User
+              </span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 gap-2"
+          onClick={() => mutate()}
+          disabled={isLoading}
+        >
+          <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+          Actualizar
+        </Button>
+
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="h-10 gap-2"
+        >
+          <UserPlus className="h-4 w-4" />
+          Agregar usuario
+        </Button>
+      </div>
+    </motion.div>
+  );
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+        No se pudieron cargar los usuarios.
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -392,25 +410,16 @@ export function UsersTable() {
     >
       {filterControls}
 
-      <div className="overflow-hidden rounded-lg border-2 border-muted">
+      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <Table className="text-sm">
-          <TableHeader className="sticky top-0 z-10 bg-muted">
+          <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur">
             <TableRow>
-              {[
-                { label: "Name" },
-                { label: "Verification" },
-                { label: "Linked Accounts" },
-                { label: "Role" },
-                { label: "Status" },
-                { label: "Last Sign In" },
-                { label: "Created At" },
-                { label: "Actions", className: "w-[80px]" },
-              ].map((col) => (
+              {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col.label}
                   className={[
                     col.className,
-                    "px-4 py-3 text-xs font-medium text-muted-foreground",
+                    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground",
                   ]
                     .filter(Boolean)
                     .join(" ")}
@@ -422,186 +431,167 @@ export function UsersTable() {
           </TableHeader>
 
           <TableBody>
-            {isLoading
-              ? Array.from({ length: 3 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="px-4 py-3">
-                      <div className="flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-[120px]" />
-                          <Skeleton className="h-3 w-[160px]" />
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Skeleton className="h-6 w-[80px]" />
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <div className="flex -space-x-2">
-                        {Array.from({ length: 2 }).map((_, i) => (
-                          <Skeleton key={i} className="h-8 w-8 rounded-full" />
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Skeleton className="h-6 w-[60px]" />
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Skeleton className="h-4 w-[140px]" />
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Skeleton className="h-4 w-[140px]" />
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              : users.map((user: UserWithDetails) => (
-                  <motion.tr
-                    key={user.id}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="border-b transition-colors hover:bg-muted/40 data-[state=selected]:bg-muted"
-                  >
-                    <TableCell className="px-4 py-3">
-                      <div className="flex items-center gap-4">
-                        <Avatar>
-                          <AvatarImage src={user.avatarUrl} alt={user.name} />
-                          <AvatarFallback className="text-xs">
-                            {user.name.substring(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+            {isLoading ? (
+              renderSkeletonRows()
+            ) : users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="px-4 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="rounded-full bg-muted p-3">
+                      <Users className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-sm font-semibold">No se encontraron usuarios</h3>
+                    <p className="max-w-sm text-sm text-muted-foreground">
+                      Prueba cambiando el correo buscado o el filtro de rol.
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((user: UserWithDetails) => (
+                <TableRow
+                  key={user.id}
+                  className="transition-colors hover:bg-muted/40"
+                >
+                  <TableCell className="px-4 py-4">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-10 w-10 border">
+                        <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
+                        <AvatarFallback className="text-xs">
+                          {(user.name || user.email || "U").slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
 
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-foreground">
-                            {user.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {user.email.replace(/^[^@]+/, (match) =>
-                              "*".repeat(match.length)
-                            )}
-                          </span>
-                        </div>
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate text-sm font-medium text-foreground">
+                          {user.name}
+                        </span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {maskEmail(user.email)}
+                        </span>
                       </div>
-                    </TableCell>
+                    </div>
+                  </TableCell>
 
-                    <TableCell className="px-4 py-3">
-                      {user.verified ? (
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1 border-border bg-muted px-2 py-1 text-xs text-foreground"
-                        >
-                          <CheckCircle className="h-3 w-3" />
-                          Verified
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1 border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground"
-                        >
-                          <XCircle className="h-3 w-3" />
-                          Unverified
-                        </Badge>
-                      )}
-                    </TableCell>
+                  <TableCell className="px-4 py-4">
+                    {user.verified ? (
+                      <Badge
+                        variant="outline"
+                        className="flex w-fit items-center gap-1 border-border bg-muted px-2 py-1 text-xs text-foreground"
+                      >
+                        <CheckCircle className="h-3 w-3" />
+                        Verificado
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="flex w-fit items-center gap-1 border-border bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+                      >
+                        <XCircle className="h-3 w-3" />
+                        No verificado
+                      </Badge>
+                    )}
+                  </TableCell>
 
-                    <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-4">
+                    {user.accounts?.length ? (
                       <div className="flex -space-x-2">
                         {user.accounts.map((account) => (
                           <div
                             key={account}
-                            className="rounded-full bg-muted p-1.5 text-muted-foreground dark:bg-neutral-700"
+                            className="rounded-full border bg-muted p-1.5"
                             title={account}
                           >
                             {getAccountIcon(account)}
                           </div>
                         ))}
                       </div>
-                    </TableCell>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Sin cuentas</span>
+                    )}
+                  </TableCell>
 
-                    <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-4">
+                    <Badge
+                      variant="outline"
+                      className={`flex w-fit items-center gap-1 px-2 py-1 text-xs ${
+                        user.role === "admin"
+                          ? "border-border bg-muted text-foreground"
+                          : "border-border bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {user.role === "admin" ? (
+                        <Shield className="h-3 w-3" />
+                      ) : (
+                        <User className="h-3 w-3" />
+                      )}
+                      {user.role
+                        ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                        : "User"}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-4">
+                    {user.banned ? (
+                      <div className="flex flex-col gap-1">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="flex w-fit cursor-help items-center gap-1 border-foreground/30 bg-foreground/10 px-2 py-1 text-xs text-foreground"
+                            >
+                              <Ban className="h-3 w-3" />
+                              Bloqueado
+                            </Badge>
+                          </TooltipTrigger>
+                          {user.banReason && (
+                            <TooltipContent>
+                              Motivo: {user.banReason}
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+
+                        {user.banExpires && (
+                          <span className="text-xs text-muted-foreground">
+                            Expira: {formatDateSafe(user.banExpires, "MMM d, yyyy")}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
                       <Badge
                         variant="outline"
-                        className={`flex items-center gap-1 px-2 py-1 text-xs ${
-                          user.role === "admin"
-                            ? "border-border bg-muted text-foreground"
-                            : "border-border bg-secondary text-secondary-foreground"
-                        }`}
+                        className="flex w-fit items-center gap-1 border-border bg-muted px-2 py-1 text-xs text-foreground"
                       >
-                        {user.role === "admin" ? (
-                          <Shield className="h-3 w-3" />
-                        ) : (
-                          <User className="h-3 w-3" />
-                        )}
-                        {user.role
-                          ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
-                          : "User"}
+                        <Check className="h-3 w-3" />
+                        Activo
                       </Badge>
-                    </TableCell>
+                    )}
+                  </TableCell>
 
-                    <TableCell className="px-4 py-3">
-                      {user.banned ? (
-                        <div className="flex flex-col gap-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                variant="outline"
-                                className="cursor-help border-foreground/30 bg-foreground/10 px-2 py-1 text-xs text-foreground"
-                              >
-                                <Ban className="h-3 w-3" />
-                                Banned
-                              </Badge>
-                            </TooltipTrigger>
-                            {user.banReason && (
-                              <TooltipContent>
-                                Reason: {user.banReason}
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
+                  <TableCell className="px-4 py-4 text-xs text-muted-foreground">
+                    {formatDateSafe(user.lastSignIn, "MMM d, yyyy 'a las' h:mm a")}
+                  </TableCell>
 
-                          {user.banExpires && (
-                            <span className="text-xs text-muted-foreground">
-                              Expires: {formatDateSafe(user.banExpires, "MMM d, yyyy")}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1 border-border bg-muted px-2 py-1 text-xs text-foreground"
-                        >
-                          <Check className="h-3 w-3" />
-                          Active
-                        </Badge>
-                      )}
-                    </TableCell>
+                  <TableCell className="px-4 py-4 text-xs text-muted-foreground">
+                    {formatDateSafe(user.createdAt, "MMM d, yyyy 'a las' h:mm a")}
+                  </TableCell>
 
-                    <TableCell className="px-4 py-3 text-xs text-muted-foreground">
-                      {formatDateSafe(user.lastSignIn, "MMM d, yyyy 'at' h:mm a")}
-                    </TableCell>
-
-                    <TableCell className="px-4 py-3 text-xs text-muted-foreground">
-                      {formatDateSafe(user.createdAt, "MMM d, yyyy 'at' h:mm a")}
-                    </TableCell>
-
-                    <TableCell className="px-4 py-3">
-                      <UserActions
-                        user={user}
-                        onActionComplete={handleActionComplete}
-                      />
-                    </TableCell>
-                  </motion.tr>
-                ))}
+                  <TableCell className="px-4 py-4">
+                    <UserActions
+                      user={user}
+                      onActionComplete={handleActionComplete}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
-      <div className="flex items-center justify-between px-4 py-1">
+      <div className="flex flex-col gap-3 px-1 md:flex-row md:items-center md:justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {users.length} of {total} users
+          Mostrando {currentFrom}-{currentTo} de {total} usuarios
         </div>
         {renderPagination()}
       </div>
