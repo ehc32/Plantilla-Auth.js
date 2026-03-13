@@ -11,7 +11,6 @@ import {
   Shield,
   User,
   BarChart3,
-  Database,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ModeToggle } from "@/components/mode-toggle";
